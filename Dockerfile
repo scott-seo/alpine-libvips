@@ -2,18 +2,22 @@ FROM alpine:3.5
 
 WORKDIR /tmp
 ENV LIBVIPS_VERSION_MAJOR 8
-ENV LIBVIPS_VERSION_MINOR 4
-ENV LIBVIPS_VERSION_PATCH 5
+ENV LIBVIPS_VERSION_MINOR 5
+ENV LIBVIPS_VERSION_PATCH 4
 
 RUN apk add --no-cache --virtual .build-deps \
   gcc g++ make libc-dev \
-  curl \
   automake \
   libtool \
   tar \
-  gettext && \
+  gettext \
+  ca-certificates \
+  openssl \
+  curl \
+  libressl \
+  wget && \
 
-  apk add --no-cache --virtual .libdev-deps \
+apk add --no-cache --virtual .libdev-deps \
   glib-dev \
   libpng-dev \
   libwebp-dev \
@@ -21,16 +25,18 @@ RUN apk add --no-cache --virtual .build-deps \
   libxml2-dev \
   libjpeg-turbo-dev && \
 
-  apk add --no-cache --virtual .run-deps \
+apk add --no-cache --virtual .run-deps \
   glib \
   libpng \
   libwebp \
   libexif \
   libxml2 \
-  libjpeg-turbo && \
+  libjpeg-turbo \
+  expat \
+  expat-dev && \
 
   LIBVIPS_VERSION=${LIBVIPS_VERSION_MAJOR}.${LIBVIPS_VERSION_MINOR}.${LIBVIPS_VERSION_PATCH} && \
-  curl -O http://www.vips.ecs.soton.ac.uk/supported/${LIBVIPS_VERSION_MAJOR}.${LIBVIPS_VERSION_MINOR}/vips-${LIBVIPS_VERSION}.tar.gz && \
+  wget https://github.com/jcupitt/libvips/releases/download/v${LIBVIPS_VERSION_MAJOR}.${LIBVIPS_VERSION_MINOR}.${LIBVIPS_VERSION_PATCH}/vips-${LIBVIPS_VERSION}.tar.gz && \
   tar zvxf vips-${LIBVIPS_VERSION}.tar.gz && \
   cd vips-${LIBVIPS_VERSION} && \
   ./configure --without-python --without-gsf && \
